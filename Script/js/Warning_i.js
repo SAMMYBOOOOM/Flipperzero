@@ -1,4 +1,4 @@
-// Script
+// Script (From I-Am-Jakoby's github PowerShell-for-Hackers)
 let script = [
     "function MsgBox {[CmdletBinding()]param ([Parameter(Mandatory = $True)][Alias(\"m\")][string]$message,[Parameter(Mandatory = $False)][Alias(\"t\")][string]$title,",
     "[Parameter(Mandatory = $False)][Alias(\"b\")][ValidateSet(\'OK\',\'OKCancel\',\'YesNoCancel\',\'YesNo\')][string]$button,",
