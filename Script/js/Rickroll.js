@@ -1,4 +1,4 @@
-// Script
+// Script (From I-Am-Jakoby's github PowerShell-for-Hackers)
 let script = [
     "Function Set-Volume {Param([Parameter(Mandatory=$true)][ValidateRange(0,100)][Int]$volume)",
     "$keyPresses = [Math]::Ceiling( $volume / 2 )",
