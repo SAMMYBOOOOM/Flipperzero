@@ -1,0 +1,39 @@
+REM Open PowerShell
+GUI r
+DELAY 600
+STRING powershell -NoProfile -ExecutionPolicy Bypass
+ENTER
+DELAY 600
+
+REM Define the Set-Volume function in PowerShell
+STRING Function Set-Volume {Param([Parameter(Mandatory=$true)][ValidateRange(0,100)][Int]$volume)
+ENTER
+DELAY 200
+STRING $keyPresses = [Math]::Ceiling( $volume / 2 )
+ENTER
+DELAY 200
+STRING $obj = New-Object -ComObject WScript.Shell
+ENTER
+DELAY 200
+STRING 1..50 | ForEach-Object {  $obj.SendKeys( [char] 174 )  }
+ENTER
+DELAY 200
+STRING for( $i = 0; $i -lt $keyPresses; $i++ ){$obj.SendKeys( [char] 175 )}}
+ENTER
+DELAY 200
+
+REM Set the volume to 100
+STRING Set-Volume -volume 100
+ENTER
+DELAY 200
+
+REM Open YouTube video
+STRING Start-Process 'https://www.youtube.com/watch?v=2qBlE2-WL60'
+ENTER
+DELAY 200
+
+REM Exit PowerShell
+STRING exit
+ENTER
+
+REM Script complete
